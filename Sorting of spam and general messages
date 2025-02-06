@@ -1,0 +1,81 @@
+# Step 1: Import necessary libraries
+import pandas as pd 
+from sklearn.model_selection import train_test_split 
+from sklearn.feature_extraction.text import TfidfVectorizer 
+from sklearn.naive_bayes import MultinomialNB 
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix 
+
+# Import the google.colab library for authentication
+from google.colab import auth
+
+# Import necessary libraries for Google authentication
+from google.auth import default
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
+from google.colab import drive as colab_drive
+
+#Import GoogleCredentials
+from google.oauth2.service_account import Credentials as GoogleCredentials # Import GoogleCredentials
+
+# Step 2: Authenticate and mount Google Drive
+auth.authenticate_user()
+gauth = GoogleAuth()
+gauth.credentials = default() 
+drive = GoogleDrive(gauth)
+
+# Step 3: Download the file content
+file_id = '1gNZsTez-lzZZ0dkt0AEOxLIeaDDHEXBm' # Replace with your file ID
+downloaded = drive.CreateFile({'1gNZsTez-lzZZ0dkt0AEOxLIeaDDHEXBm': file_id})
+downloaded.GetContentFile('data.csv')  # Downloads the file as 'data.csv'
+
+# Step 4: Read the downloaded file using pandas
+data = pd.read_csv('data.csv') # Now read the downloaded CSV
+
+
+# Step 5: Data Preprocessing
+# Assuming the dataset has columns "text" and "label" where label is "spam" or "ham"
+X = data['text']  # Features (SMS text)
+y = data['label']  # Labels (spam/ham)
+
+# Step 6: Train-Test Split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Step 7: Vectorization (TF-IDF)
+vectorizer = TfidfVectorizer(stop_words='english')
+X_train_tfidf = vectorizer.fit_transform(X_train)
+X_test_tfidf = vectorizer.transform(X_test)
+
+# Step 8: Model Training (Naive Bayes)
+model = MultinomialNB()
+model.fit(X_train_tfidf, y_train)
+
+# Step 9: Model Evaluation
+y_pred = model.predict(X_test_tfidf)
+
+# Print accuracy and classification report
+print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
+print("Classification Report:\n", classification_report(y_test, y_pred))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+# Assuming the dataset has columns "text" and "label" where label is "spam" or "ham"
+X = data['text']  # Features (SMS text)
+y = data['label']  # Labels (spam/ham)
+
+# Step 10: Train-Test Split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Step 11: Vectorization (TF-IDF)
+vectorizer = TfidfVectorizer(stop_words='english')
+X_train_tfidf = vectorizer.fit_transform(X_train)
+X_test_tfidf = vectorizer.transform(X_test)
+
+# Step 12: Model Training (Naive Bayes)
+model = MultinomialNB()
+model.fit(X_train_tfidf, y_train)
+
+# Step 13: Model Evaluation
+y_pred = model.predict(X_test_tfidf)
+
+# Print accuracy and classification report
+print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
+print("Classification Report:\n", classification_report(y_test, y_pred))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
